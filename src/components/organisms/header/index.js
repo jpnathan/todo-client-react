@@ -1,16 +1,12 @@
 'use strict'
 
-import React from 'react'
-import AccountCircle from '@material-ui/icons/AccountCircle'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   AppBar,
   Toolbar,
-  IconButton,
   Typography,
   Button,
-  Menu,
-  MenuItem,
   makeStyles
 } from '@material-ui/core'
 
@@ -38,10 +34,13 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function Header () {
-  const [auth, setAuth] = React.useState(true)
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const open = Boolean(anchorEl)
+  const [auth, setAuth] = useState(true)
+  const [userName, setUserName] = useState('')
 
+  useEffect(() => {
+    showUserName(); 
+  }, [])
+    
   const appBarCustomStyle = {
     background: 'transparent',
     boxShadow: 'none',
@@ -50,12 +49,15 @@ export default function Header () {
   }
   const classes = useStyles()
 
-  const handleMenu = event => {
-    setAnchorEl(event.currentTarget)
-  }
+  const handleLogout = () => {
+    localStorage.clear();
+  };
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const showUserName = () => {
+    const user = localStorage.getItem('user');
+console.log(JSON.parse(user));
+
+    return setUserName(user.name);
   }
 
   return (
@@ -64,46 +66,23 @@ export default function Header () {
         <Toolbar style={{ paddingLeft: 0 }}>
           <Typography variant='h5' className={classes.title}>
             <Link to='/' className={classes.link}>
-              darkcode
+              toDoit
             </Link>
           </Typography>
           {auth && (
             <div>
               <Button color='inherit'>
-                <Link to='/posts' className={classes.link}>posts</Link>
+                <Link to='/projects' className={classes.link}>
+                  Projects
+                </Link>
               </Button>
               <Button color='inherit'>
-                <Link to='/about' className={classes.link}>about</Link>
+                <Link to='/' onClick={handleLogout} className={classes.link}>
+                  Logout
+                </Link>
               </Button>
-              <IconButton
-                aria-label='account of current user'
-                aria-controls='menu-appbar'
-                aria-haspopup='true'
-                onClick={handleMenu}
-                color='inherit'>
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id='menu-appbar'
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right'
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <Link to='/editor' className={classes.link}>Write</Link>
-                </MenuItem>
-                <MenuItem onClick={handleClose}>logout</MenuItem>
-              </Menu>
+
+              <span className={classes.link}> {userName} </span>
             </div>
           )}
         </Toolbar>
